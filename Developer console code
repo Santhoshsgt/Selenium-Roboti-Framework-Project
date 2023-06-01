@@ -1,0 +1,176 @@
+*** Settings ***
+Documentation     Log Ticket in Concierge App
+Library    SeleniumLibrary
+#Resource    ../Resources/Credentials.robot          #Separate robot file for login credentials of the tester
+
+#Come up with the automation scripts to Navigate to the SAM Console
+#Create a Software Request case Manually
+#Validate the page tabs and pagelayout components like Assign SLK, Case/Contact info, Request Manager Approval buttons etc.,
+
+*** Variables ***
+
+${browser}  chrome
+${url}   https://supportforce--spfqa3.sandbox.my.salesforce.com/index.jsp?ec=20037&eco=1
+${APPname}  ITAM Console
+${sec}  Khkindustries@2022
+
+${CaseStatus}   New
+
+${Last Day Worked}       '2023-05-05'
+${PBT}                    Supreme Robot
+${ConName}                 Robot Rbt Manager Mgr
+
+
+*** Keywords ***
+ Switch Window
+    [Arguments]    ${locator}
+    ${window_handles}    Get Window Handles
+    ${index}    Evaluate    ${window_handles.index('CURRENT')} + ${locator}
+    Select Window    ${index}
+
+
+
+
+*** Test Cases ***
+Verify basic login functionality for salesforce login Site
+    [Documentation]    This test case verifies the login of spfqa3 and go to ITAM app to create Tech Asset Record
+    [Tags]    Functional
+    ${options}=     Evaluate    sys.modules['selenium.webdriver.chrome.options'].Options()  sys
+    Call Method         ${options}      add_argument        --disable-notifications
+    ${driver}=  create webdriver    Chrome  options=${options}
+    go to    ${url}
+
+    input text    //*[@id="username"]    k.chandrashekar@salesforce.com.spfqa3
+    input text    //*[@id="password"]    ${sec}
+    press keys    //*[@id="Login"]                  [Return]
+    sleep    5
+    maximize browser window
+    sleep   10
+    #click element   xpath://div[@role="button"][@class="setupGear"]
+    #click element   xpath://div[@role="button"][@class=" setupGear"]//span[@role="tooltip"]
+    click element   xpath://div/lightning-icon[@icon-name="utility:setup"]
+    sleep   5
+    click element   xpath://*[@id="developer-console-link"]
+    sleep   15
+   # Wait Until Page Contains   xpath://div[@id="debugMenuEntry"]//span[@class="x-btn-inner"]
+    #Wait Until Page Contains    xpath://div[@class='x-btn x-box-item x-toolbar-item x-btn-default-toolbar-small x-noicon x-btn-noicon x-btn-default-toolbar-small-noicon']//button[@id="editorMenuEntry-btnEl"]
+    Click Element    xpath://div[@id="debugMenuEntry"]/em/button/span[text()='Debug']
+    #Switch Window   index=-1
+    #click element   xpath://*[@id="debugMenuEntry-btnEl"][@role="button"]//span[@class="x-btn-inner"]
+    #click element   xpath://div[@id="debugMenuEntry"]//span[@class="x-btn-inner"]
+    #click element   xpath://div[@id="debugMenuEntry"]/em/button/span[text()='Debug']
+    #click element   xpath://*[@id="debugMenuEntry-btnEl"][@role="button"]//span[@id="debugMenuEntry-btnInnerEl"]
+    #click element   xpath://*[@class="x-btn x-box-item x-toolbar-item x-btn-default-toolbar-small x-noicon x-btn-noicon x-btn-default-toolbar-small-noicon"]@id="debugMenuEntry"]//button
+    #click element   xpath://div[@id="debugMenuEntry"]//button
+    #click element   xpath://*[@id="debugMenuEntry"]//span[@id="debugMenuEntry-btnInnerEl"]
+    sleep   5
+    click element   xpath://div[@class="x-component x-box-item x-component-default x-menu-item"]/a[@id="openExecuteAnonymousWindow-itemEl"]
+    sleep   5
+
+    click element    xpath://*[@class="slds-icon-waffle"]
+    wait until element is visible    xpath://*[@class="al-menu-search-bar"]/lightning-input/div/div/input  15
+#    #Enter ITAM Console in App launcher search Dynamic
+    input text      xpath://*[@class="al-menu-search-bar"]/lightning-input/div/div/input   ${APPname}
+#   #Selecting First ITAM Console search result
+    sleep   5
+    click element    xpath://*[@class="al-menu-dropdown-list"]/one-app-launcher-menu-item/*[@data-label="${APPname}"]/div/lightning-avatar/img
+    sleep   15
+
+    #Selecting Tech Assets Tab from ITAM App
+    click element    xpath://*[@class="slds-context-bar__icon-action"]
+    sleep    15
+    click element    xpath://*[@class="slds-media slds-listbox__option slds-listbox__option_entity slds-p-around_none"]/*[@data-label="Cases"]
+    sleep   15
+    click element   xpath://*[@class="forceActionLink"][@title="New"]
+    sleep   15
+    scroll element into view    xpath://*[@class="slds-form-element__label topdown-radio--label"][text()="Termination Process"]
+    click element   xpath://span[@class="slds-form-element__label topdown-radio--label"]//following ::span[text()='Termination Process']
+    sleep   5
+    click element   xpath://span[@class=" label bBody"]//following ::span[text()='Next']
+    sleep   15
+ #Case Status
+    click element    xpath://button[contains(@aria-label,'Status')]
+    click element    xpath://lightning-base-combobox-item[@data-value="${CaseStatus}"]
+    sleep   5
+   scroll element into view    xpath://*[@class="slds-form-element__label slds-no-flex"][text()="Person Name"]
+   sleep    5
+    #Termination Date
+    input text   xpath://div[@data-target-selection-name="sfdc:RecordField.Case.Termination_Date__c"]//input     05/05/2023
+    #input text    xpath://input[@name="Termination Date"]  ${Termination Date}
+    sleep   5
+    #Last Day worked
+    input text   xpath://div[@data-target-selection-name="sfdc:RecordField.Case.Termination_Last_Day_Worked__c"]//input      05/05/2023
+    #input text    xpath://input[@name="Last Day Worked"]  ${Last Day Worked}
+    sleep   5
+    scroll element into view    xpath://*[@class="slds-form-element__label"][text()="Person Type"]
+    #Person Being termed
+    ##click element   xpath://*[@class="slds-truncate"][@title="Supreme Robot"]
+    sleep   5
+     input text      xpath://div[@data-target-selection-name="sfdc:RecordField.Case.Termination_Worker__c"]//input       Supreme Robot
+    #click element   xpath://*[@class="slds-truncate"][@title="Supreme Robot"]
+    click element   xpath://*[@data-value="Supreme Robot"]
+    sleep   5
+  scroll element into view      xpath://*[@class="slds-form-element__label slds-no-flex"][text()="Subject"]
+    input text  xpath://div[@data-target-selection-name="sfdc:RecordField.Case.ContactId"]//input               Robot Rbt Manager Mgr
+   # click element   xpath://*[@class="slds-truncate"][@title="Robot Rbt Manager Mgr"]
+    click element   xpath://*[@data-value="Robot Rbt Manager Mgr"]
+    sleep   5
+        #click element    xpath://input[@placeholder="Search Person Being Termed..."]
+   # sleep    5
+    #input text      xpath://input[@placeholder="Search Person Being Termed..."]    ${PBT}
+    #sleep    5
+    #click element    xpath://lightning-base-combobox-formatted-text[@title="${PBT}"]
+    #contact name
+    #click element    xpath://input[@placeholder="Search Contact Name..."]
+    #sleep    5
+    #input text      xpath://input[@placeholder="Search Contact Name..."]    ${ConName}
+    #sleep    5
+    #click element    xpath://lightning-base-combobox-formatted-text[@title="${ConName}"]
+
+
+
+
+
+    #click element    xpath://input[@placeholder="Search Accounts..."]
+    #sleep    5
+    #input text      xpath://input[@placeholder="Search Accounts..."]    ${AccName}
+    #sleep    5
+    #click element    xpath://lightning-base-combobox-formatted-text[@title="${AccName}"]
+
+    #sleep   15
+    #scroll element into view   xpath://*[text()="Termination Case"]
+   # sleep   5
+
+
+
+
+
+   click element    xpath://li[@data-target-selection-name="sfdc:StandardButton.Case.SaveEdit"]//button
+
+    sleep    10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
